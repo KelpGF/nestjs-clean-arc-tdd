@@ -1,0 +1,21 @@
+version: "3.9"
+
+networks:
+  nestjs-clean-prod:
+    driver: bridge
+
+services:
+  api-nestjs-clean-prod:
+    restart: always
+    image: nestjs-clean-prod
+    container_name: api-nestjs-clean-prod
+    env_file: .env
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/usr/nestjs-clean-prod/app
+      - ./node_modules:/usr/nestjs-clean-prod/app/node_modules
+    networks:
+      - nestjs-clean-prod
+    extra_hosts:
+      - host.docker.internal:host-gateway

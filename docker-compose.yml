@@ -1,0 +1,42 @@
+version: "3.9"
+
+networks:
+  nestjs-clean:
+    driver: bridge
+
+services:
+  api-nestjs-clean:
+    restart: always
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: api-nestjs-clean
+    entrypoint: sh .docker/entrypoint.sh
+    env_file: .env
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/usr/nestjs-clean/app
+      - ./node_modules:/usr/nestjs-clean/app/node_modules
+    depends_on:
+      - mongo
+    networks:
+      - nestjs-clean
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+  mongo:
+    image: mongo:4.0.3
+    container_name: mongo-nestjs-clean
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data:/data/nestjs-clean/db-mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    networks:
+      - nestjs-clean
+    extra_hosts:
+      - host.docker.internal:host-gateway

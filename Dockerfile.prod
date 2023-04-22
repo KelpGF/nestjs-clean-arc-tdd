@@ -1,0 +1,25 @@
+FROM node:16-alpine as build
+
+WORKDIR /usr/nestjs-clean/app
+
+ENV NODE_ENV=production
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+FROM node:16-alpine
+
+ENV NODE_ENV=production
+
+WORKDIR  /usr/nestjs-clean/app
+
+COPY --from=build  /usr/nestjs-clean/app/dist ./dist
+COPY --from=build  /usr/nestjs-clean/app/node_modules ./node_modules
+COPY --from=build /usr/nestjs-clean/app/package.json package.json
+
+EXPOSE 3000
+
+ENTRYPOINT [ "npm", "run", "start:prod" ]
